@@ -8,8 +8,34 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ullink.slack.simpleslackapi.*;
-import com.ullink.slack.simpleslackapi.events.*;
+import com.ullink.slack.simpleslackapi.SlackAttachment;
+import com.ullink.slack.simpleslackapi.SlackChannel;
+import com.ullink.slack.simpleslackapi.SlackFile;
+import com.ullink.slack.simpleslackapi.SlackIntegration;
+import com.ullink.slack.simpleslackapi.SlackPresence;
+import com.ullink.slack.simpleslackapi.SlackSession;
+import com.ullink.slack.simpleslackapi.SlackUser;
+import com.ullink.slack.simpleslackapi.events.EventType;
+import com.ullink.slack.simpleslackapi.events.PinAdded;
+import com.ullink.slack.simpleslackapi.events.PinRemoved;
+import com.ullink.slack.simpleslackapi.events.PresenceChange;
+import com.ullink.slack.simpleslackapi.events.ReactionAdded;
+import com.ullink.slack.simpleslackapi.events.ReactionRemoved;
+import com.ullink.slack.simpleslackapi.events.SlackChannelArchived;
+import com.ullink.slack.simpleslackapi.events.SlackChannelCreated;
+import com.ullink.slack.simpleslackapi.events.SlackChannelDeleted;
+import com.ullink.slack.simpleslackapi.events.SlackChannelJoined;
+import com.ullink.slack.simpleslackapi.events.SlackChannelLeft;
+import com.ullink.slack.simpleslackapi.events.SlackChannelRenamed;
+import com.ullink.slack.simpleslackapi.events.SlackChannelUnarchived;
+import com.ullink.slack.simpleslackapi.events.SlackEvent;
+import com.ullink.slack.simpleslackapi.events.SlackEventType;
+import com.ullink.slack.simpleslackapi.events.SlackGroupJoined;
+import com.ullink.slack.simpleslackapi.events.SlackMessageDeleted;
+import com.ullink.slack.simpleslackapi.events.SlackMessagePosted;
+import com.ullink.slack.simpleslackapi.events.SlackMessageUpdated;
+import com.ullink.slack.simpleslackapi.events.UnknownEvent;
+import com.ullink.slack.simpleslackapi.events.UserTyping;
 import com.ullink.slack.simpleslackapi.events.userchange.SlackTeamJoin;
 import com.ullink.slack.simpleslackapi.events.userchange.SlackUserChange;
 
@@ -53,7 +79,10 @@ class SlackJSONMessageParser {
         }
     }
 
-    static SlackEvent decode(SlackSession slackSession, JsonObject obj) {
+    static SlackEvent decode(SlackSession slackSession, JsonObject objEvent) {
+        JsonElement payloadJsonElem = objEvent.getAsJsonObject().get("payload");
+        JsonElement eventJsonElem = payloadJsonElem.getAsJsonObject().get("event");
+        JsonObject obj = eventJsonElem.getAsJsonObject();
         if (obj.get("type") == null) {
           return new UnknownEvent(obj.toString());
         }
